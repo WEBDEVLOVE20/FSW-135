@@ -1,0 +1,161 @@
+Intro to Mongoose:
+
+#Purpose
+*Creates models
+*query Data
+
+#Connect
+    **Making sure you are on the back end** 
+        npm install mongoose (must be installed with each new project)
+
+const express = require("express")
+const app = express()
+const morgan = require('morgan')
+const mongoose = require('mongoose');
+
+// Middleware (for every request) //
+app.use(express.json()) 
+app.use(morgan('dev')) 
+
+//Connect to database
+mongoose.connect('mongodb://localhost:27017/moviesdb', //moviesdb is name of database
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify:false
+    }, //mongoosejs.com/docs/deprecations.html 
+    () => console.log("Connected to the database")
+)
+
+// Routes //
+app.use("/movies", require("./routes/movieRouter.js"))
+app.use("/tvshows", require('./routes/tvshowRouter.js'))
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.log(err)
+  return res.send({errMsg: err.message})
+})
+
+// Server Listen //
+app.listen(9000, () => {
+  console.log("The server is running on Port 9000")
+})
+
+
+
+
+
+
+
+Mongoose Schemas:
+*Blueprints for our data
+
+Mongoose Models:
+*Models have a Name, and a Blueprint (Schema)
+*Models are used to perform the CRUD operations on data created with the Models
+
+#Create Folder in backend called models
+    **In models folder create .js file (movie.js)**
+
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+
+//Movie blueprint
+
+const movieSchema = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    genre: {
+        type: String,
+        required: true,
+    },
+    releaseYear: Number
+})
+
+module.exports = mongoose.model("Movie", movieSchema)
+
+
+
+
+
+
+Get Request with Mongoose:
+
+
+const express = require('express')
+const movieRouter = express.Router()
+const Movie = require('../models/movie.js')
+
+
+// Get All
+movieRouter.get("/", (req, res, next) => {
+    Movie.find((err, movies) =>{
+        if(err) {
+            res.status(500)
+            return next(err)
+        }
+        return res.status(200).send(movies)
+    })
+})
+
+
+// Post One
+movieRouter.post("/", (req, res, next) => {
+  const newMovie = req.body
+  newMovie._id = uuid()
+  movies.push(newMovie)
+  return res.status(201).send(newMovie)
+})
+
+
+// Get One
+movieRouter.get("/:movieId", (req, res, next) => {
+  const movieId = req.params.movieId
+  const foundMovie = movies.find(movie => movie._id === movieId)
+  if(!foundMovie){
+    const error = new Error(`The item with id ${movieId} was not found.`)
+    res.status(500)
+    return next(error)
+  }
+  return res.status(200).send(foundMovie)
+})
+
+
+// Get by genre
+movieRouter.get("/search/genre", (req, res, next) => {
+  const genre = req.query.genre
+  if(!genre){
+    const error = new Error("You must provide a genre")
+    res.status(500)
+    return next(error)
+  }
+  const filteredMovies = movies.filter(movie => movie.genre === genre)
+  return res.status(200).send(filteredMovies)
+})
+
+
+// Delete One
+movieRouter.delete("/:movieId", (req, res, next) => {
+  const movieId = req.params.movieId
+  const movieIndex = movies.findIndex(movie => movie._id === movieId)
+  movies.splice(movieIndex, 1)
+  return res.send("SUccessfully deleted movie!")
+})
+
+
+// Update One
+movieRouter.put("/:movieId", (req, res, next) => {
+  const movieId = req.params.movieId
+  const updateObject = req.body
+  const movieIndex = movies.findIndex(movie => movie._id === movieId)
+  const updatedMovie = Object.assign(movies[movieIndex], updateObject)
+  return res.status(201).send(updatedMovie)
+})
+
+
+module.exports = movieRouter
