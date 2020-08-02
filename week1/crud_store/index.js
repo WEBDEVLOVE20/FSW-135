@@ -18,8 +18,6 @@ mongoose.connect('mongodb://localhost:27017/storedb',
     () => console.log("Connected to the database")
 )
 
-// Routes //
-app.use("/movies", require("./routes/movieRouter.js"))
 
 
 // Error handler
