@@ -1,13 +1,13 @@
-const express = require("express")
-const app = express()
-const morgan = require('morgan')
+const express = require("express");
+const app = express();
+const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 
-app.use(express.json()) 
-app.use(morgan('dev')) 
+app.use(express.json())
+app.use(morgan('dev'))
 
-//Connect to database
+// Connect to database
 mongoose.connect('mongodb://localhost:27017/storedb', 
     {
         useNewUrlParser: true,
@@ -18,6 +18,8 @@ mongoose.connect('mongodb://localhost:27017/storedb',
     () => console.log("Connected to the database")
 )
 
+// Routes
+app.use("/items", require("./routes/storeRouter.js"))
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -25,7 +27,7 @@ app.use((err, req, res, next) => {
   return res.send({errMsg: err.message})
 })
 
-// Server Listen //
+// Server Listen
 app.listen(9000, () => {
   console.log("The server is running on Port 9000")
 })
