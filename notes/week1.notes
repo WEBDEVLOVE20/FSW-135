@@ -6,9 +6,12 @@ Express:
 
 start server 
 
+
     nodemon index.js
 
  *npm install morgan
+
+ npm install mongoose (must be installed with each new project)
 
  
 Intro to Mongoose:

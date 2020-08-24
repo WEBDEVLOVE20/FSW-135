@@ -1,0 +1,19 @@
+In the files you just created:
+
+# npm install jsonwebtoken
+
+then install
+
+# npm install dotenv
+
+new file in main folders
+new file
+
+ **.env**
+
+ SECRET="unicorn tomato fast cloudy"
+
+
+# npm install express-jwt 
+
+// 

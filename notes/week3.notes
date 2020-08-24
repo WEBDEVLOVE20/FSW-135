@@ -1,0 +1,186 @@
+Example:
+
+
+#in routes folder
+***authorRouter.js**
+
+const express = require('express')
+const authorRouter = express.Router()
+const Author = require('../models/author.js')
+
+// Get all authors
+authorRouter.get("/", (req, res, next) => {
+    Author.find((err, authors) => {
+        if(err){
+            res.status(500)
+            return next(err)
+        }
+        return res.status(200).send(authors)
+    })
+})
+
+// Add new authors
+authorRouter.post("/", (req, res, next) => {
+    const newAuthor = new Author(req.body)
+    newAuthor.save((err, savedAuthor) => {
+        if(err){
+            res.status(500)
+            return next(err)
+        }
+        return res.status(201).send(savedAuthor)
+    })
+})
+
+module.exports = authorRouter
+
+
+**bookRouter.js**
+
+const express = require('express')
+const bookRouter = express.Router()
+const Book = require('../models/book.js')
+const book = require('../models/book.js')
+
+
+// Get all authors
+bookRouter.get("/", (req, res, next) => {
+    Book.find((err, books) => {
+        if(err){
+            res.status(500)
+            return next(err)
+        }
+        return res.status(200).send(books)
+    })
+})
+
+// Get by author
+
+bookRouter.get("/:authorID", (req, res, next) => {
+    Book.find({author: req.params.authorID}, (err, books) => {
+        if(err){
+            res.status(500)
+            return next(err)
+        }
+        return res.status(200).send(books)
+    })
+})
+
+// Add new authors
+bookRouter.post("/:authorID", (req, res, next) => {
+    req.body.author = req.params.authorID
+    const newBook = new Book(req.body)
+    newBook.save((err, savedBook) => {
+        if(err){
+            res.status(500)
+            return next(err)
+        }
+        return res.status(201).send(savedBook)
+    })
+})
+
+
+// Like a book
+book.Router.put("/like/:bookID", (req, res, next) => {
+    Book.findOneAndUpdate(
+        {_id: req.params.bookID },
+        { $inc: { likes: 1 }},
+        { new: true },
+        (err, updatedBook) => {
+            if(err){
+                res.status(500)
+            }
+            return res.status(201).send(updatedBook)
+        }
+    )
+})
+
+module.exports = bookRouter
+
+#models folder
+**author.js**
+
+
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const authorSchema = new Schema({
+    name: {
+        type: String,
+        required: true
+    }
+})
+
+module.exports = mongoose.model("Author", authorSchema)
+
+**book.js**
+
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const bookSchema = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    likes: {
+        type: Number,
+        default: 0
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: "Author",
+        required: true
+    }
+})
+
+module.exports = mongoose.model("Book", bookSchema)
+
+**server.js**
+
+// Server
+const express = require('express')
+const app = express()
+const morgan = require('morgan')
+const mongoose = require('mongoose')
+const connectMessage = 'Server is running on Port 9000';
+
+// Middleware
+app.use(express.json())
+app.use(morgan('dev'))
+
+// MongoDB/Mongoose
+mongoose.connect('mongodb://localhost:27017/db-methods',
+
+{
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+},
+() => console.log('connected to the db-methods'))
+
+// Routes
+// app.use('/books', require('./routes/bookRouter.js'))
+// app.use('./authors', require('.routes/authorRouter.js'))
+
+// Error Handling
+app.use((err, req, res, next) => {
+    console.log(err)
+    return res.send({errMsg: err.message})
+})
+
+// Server Connection
+app.listen(9000, () => {
+    console.log(`${connectMessage}`)
+})
+
+
+
+# MongoDB Methods
+
+$inc
+$regex
+$pull
+$push
+where
+exec
