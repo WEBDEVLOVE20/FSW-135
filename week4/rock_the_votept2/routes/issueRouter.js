@@ -3,7 +3,7 @@ const issueRouter = express.Router()
 const Issue = require('../models/issue')
 
 
-// GET ALL ISSUES
+// GET ALL ISSUESs
 issueRouter.get("/", (req, res, next) => {
     Issue.find((err, allIssues) => {
         if(err){
