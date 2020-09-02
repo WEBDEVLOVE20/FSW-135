@@ -16,4 +16,18 @@ new file
 
 # npm install express-jwt 
 
-// 
+
+
+Front End:
+
+Create client folder
+#install npx create-react-app .
+
+#install npm axios
+
+#install npm react-router dom
+
+Add "proxy": "http://localhost:7000" to package.json file at bottom in client folder
+
+
+# install npm bcrypt  // << for encryption install in backend
