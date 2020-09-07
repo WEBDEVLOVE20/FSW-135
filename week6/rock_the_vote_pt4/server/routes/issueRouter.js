@@ -1,9 +1,9 @@
-const express = require ('express')
-const issueRouter = express.Router()
-const Issue = require('../models/issue')
+const express = require ('express');
+const issueRouter = express.Router();
+const Issue = require('../models/issue');
 
 
-// GET ALL ISSUES
+// Get All Issues
 issueRouter.get("/", (req, res, next) => {
     Issue.find((err, allIssues) => {
         if(err){
@@ -14,7 +14,7 @@ issueRouter.get("/", (req, res, next) => {
     })
 })
 
-// GET ALL ISSUES BY USER ID
+// Get Issues by user id
 issueRouter.get("/user", (req, res, next) => {
     Issue.find({ user: req.user._id }, (err, issues) => {
         if(err){
@@ -25,7 +25,7 @@ issueRouter.get("/user", (req, res, next) => {
     })
 })
 
-// GET ONE ISSUE
+// Get Issue
 issueRouter.get("/:issueId", (req, res, next) => {
     Issue.findOne((err, oneIssue) => {
         if(err){
@@ -36,7 +36,7 @@ issueRouter.get("/:issueId", (req, res, next) => {
     })
 })
 
-// POST ISSUE
+// Post Issue
 issueRouter.post("/", (req, res, next) => {
     req.body.user = req.user._id
     const newIssue = new Issue(req.body)
@@ -49,7 +49,7 @@ issueRouter.post("/", (req, res, next) => {
     })
 })
 
-// UPDATE ISSUE
+// Update Issue
 issueRouter.put("/:issueId", (req, res, next) => {
     Issue.findOneAndUpdate(
         {_id: req.params.issueId, user: req.user._id}, 
@@ -65,7 +65,7 @@ issueRouter.put("/:issueId", (req, res, next) => {
     )
 })
 
-// DELETE ISSUE
+// Delete Issue
 issueRouter.delete("/:issueId", (req, res, next) => {
     Issue.findOneAndDelete({_id: req.params.issueId, user: req.user._id}, (err, deletedIssue) => {
         if(err){
